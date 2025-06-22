@@ -1,0 +1,50 @@
+{
+  "name": "voicenote-ai",
+  "version": "1.0.0",
+  "main": "electron-main.js",
+  "type": "module",
+  "private": false,
+  "scripts": {
+    "dev":        "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "build-web":  "vite build",
+    "build":      "npm run build-web && electron-builder",
+    "preview":    "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "lucide-react": "^0.517.0",
+    "@google/genai": "^1.5.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "typescript": "~5.7.2",
+    "vite": "^6.2.0",
+    "electron": "^26.0.0",
+    "electron-builder": "^23.6.0",
+    "concurrently": "^8.2.0",
+    "wait-on": "^8.2.1",
+    "@vitejs/plugin-react": "^4.0.0"
+  },
+  "build": {
+    "appId": "com.tuo.voicenoteai",
+    "productName": "Voicenote AI",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron-main.js",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "asar": true
+  }
+}
