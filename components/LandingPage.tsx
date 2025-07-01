@@ -59,7 +59,7 @@ const FeatureCard: React.FC<{icon: string, iconClass: string, title: string, des
   return (
     <div
       ref={tiltRef}
-      className="flex flex-col items-center justify-center border border-slate-500/30 rounded-2xl bg-slate-900/40 p-8 min-w-[320px] max-w-md w-full flex-1 mx-auto text-center cursor-pointer transition-transform duration-300"
+      className="flex flex-col items-center justify-center border border-slate-500/30 rounded-2xl bg-slate-900/40 p-8 h-64 min-h-64 max-h-64 flex-1 basis-0 mx-auto text-center cursor-pointer transition-transform duration-300"
       style={{willChange: 'transform'}}
     >
       <span className={`material-icons text-5xl mb-4 ${iconClass}`}>{icon}</span>
@@ -84,7 +84,7 @@ const LandingPage: React.FC = () => (
       </div>
     </header>
     <main className="flex-grow w-full">
-      <section className="py-20 sm:py-28 lg:py-32 text-center w-full">
+      <section className="py-20 sm:py-28 lg:py-32 text-center w-full px-2 sm:px-6">
         <h2 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight w-full">
           Trasforma la tua voce in <span className="text-accent">potenza.</span>
         </h2>
@@ -97,19 +97,17 @@ const LandingPage: React.FC = () => (
           </Link>
         </div>
       </section>
-      <section className="py-16 sm:py-20 bg-slate-900/30 w-full" id="features">
+      <section className="py-16 sm:py-20 bg-slate-900/30 w-full px-2 sm:px-6" id="features">
         <h3 className="text-4xl font-bold text-center mb-12 tracking-tight w-full">
           Funzionalità <span className="text-accent">Rivoluzionarie</span>
         </h3>
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-row flex-wrap gap-8 justify-center items-center">
-            {features.map((f, i) => (
-              <FeatureCard key={i} {...f} />
-            ))}
-          </div>
+        <div className="flex flex-row flex-wrap gap-8 justify-center items-stretch">
+          {features.map((f, i) => (
+            <FeatureCard key={i} {...f} />
+          ))}
         </div>
       </section>
-      <section className="py-20 sm:py-28 text-center w-full" id="cta">
+      <section className="py-20 sm:py-28 text-center w-full px-2 sm:px-6" id="cta">
         <h3 className="text-4xl font-bold mb-6 tracking-tight w-full">Pronto a Semplificare il Tuo Lavoro?</h3>
         <p className="text-lg text-secondary mb-10">
           Sperimenta la magia di VoiceNote AI. Niente più appunti manuali, solo produttività e chiarezza.
@@ -119,7 +117,7 @@ const LandingPage: React.FC = () => (
         </Link>
         <p className="text-sm text-slate-500 mt-4">Inizia gratuitamente. Nessuna carta di credito richiesta.</p>
       </section>
-      <section className="py-16 sm:py-20 bg-slate-900/30 w-full" id="faq">
+      <section className="py-16 sm:py-20 bg-slate-900/30 w-full px-2 sm:px-6" id="faq">
         <h3 className="text-4xl font-bold text-center mb-12 tracking-tight w-full">
           Domande <span className="text-accent">Frequenti</span>
         </h3>

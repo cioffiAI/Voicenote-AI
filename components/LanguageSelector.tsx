@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { UNIFIED_LANGUAGES, Language } from '../constants'; // AUTO_DETECT_LANGUAGE_OPTION removed
 
@@ -30,9 +29,6 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
 
   return (
     <div className="w-full">
-      <label htmlFor={`language-select-${label.replace(/\s+/g, '-').toLowerCase()}`} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-        {label}
-      </label>
       <select
         id={`language-select-${label.replace(/\s+/g, '-').toLowerCase()}`}
         value={selectedLanguage.code}

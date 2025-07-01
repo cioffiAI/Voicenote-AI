@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useCallback, useState, useImperativeHandle, forwardRef } from 'react';
 import { ActionButton } from './ActionButton';
 import { MicIcon } from './icons/MicIcon';
@@ -16,6 +15,7 @@ interface AudioControllerProps {
   onUnsupported: (message: string) => void;
   speechLang: string;
   disabled?: boolean; // Disables the microphone button
+  className?: string; // Permette di personalizzare la classe del bottone
 }
 
 export const AudioController = forwardRef<AudioControllerHandle, AudioControllerProps>(({
@@ -26,6 +26,7 @@ export const AudioController = forwardRef<AudioControllerHandle, AudioController
   onUnsupported,
   speechLang,
   disabled = false,
+  className,
 }, ref) => {
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const accumulatedTranscriptRef = useRef<string>('');
@@ -199,13 +200,12 @@ export const AudioController = forwardRef<AudioControllerHandle, AudioController
   return (
     <ActionButton
       onClick={handleMicButtonClick}
-      disabled={disabled || !isRecognitionInitialized}
-      className={isRecording && !disabled ? "bg-red-500 hover:bg-red-600 text-white px-8 py-4 text-lg w-full" 
-                                  : "bg-green-500 hover:bg-green-600 text-white px-8 py-4 text-lg w-full"}
-      Icon={isRecording && !disabled ? StopIcon : MicIcon}
-      isLoading={isRecording && disabled} // Shows spinner if recording but button is externally disabled
+      disabled={disabled}
+      isLoading={false}
+      Icon={isRecording ? StopIcon : MicIcon}
+      className={className}
     >
-      {isRecording && !disabled ? 'Stop Mic Recording' : 'Start Mic Recording'}
+      {isRecording ? 'Ferma registrazione' : 'Avvia registrazione'}
     </ActionButton>
   );
 });

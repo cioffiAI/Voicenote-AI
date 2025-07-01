@@ -21,9 +21,6 @@ export const SpeakerSelector: React.FC<SpeakerSelectorProps> = ({
 
   return (
     <div className="w-full"> {/* Removed my-2 for better alignment in grid */}
-      <label htmlFor="speaker-count-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-        Number of Speakers:
-      </label>
       <select
         id="speaker-count-select"
         value={value}
