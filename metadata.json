@@ -1,4 +1,3 @@
-
 {
   "name": "VoiceNote AI",
   "description": "A web application for audio transcription, diarization, summarization, and translation using AI and the browser's Speech Recognition API.",
