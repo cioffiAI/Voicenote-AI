@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AudioController, AudioControllerHandle } from './components/AudioController';
 import { ResultDisplay } from './components/ResultDisplay';
@@ -165,171 +164,166 @@ const App: React.FC = () => {
   const speechRecognitionLangCode = inputLanguage.code;
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-100 to-sky-100 dark:from-slate-800 dark:to-sky-900">
-      <header className="w-full max-w-4xl mb-8 flex justify-between items-center">
-        <div className="flex-1">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-sky-700 dark:text-sky-400 text-center sm:text-left">
-            VoiceNote AI
-          </h1>
-          <p className="text-md sm:text-lg text-gray-600 dark:text-gray-300 mt-1 sm:mt-2 text-center sm:text-left">
-            Transcribe, Diarize, Summarize, and Translate your audio with AI.
-          </p>
-        </div>
+    <>
+      <div className="min-h-screen flex flex-col items-center justify-center main-container p-4 sm:p-6 lg:p-8 relative">
+        {/* Bottone impostazioni in alto a destra */}
         <button
           onClick={() => setIsSettingsOpen(true)}
-          className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-          aria-label="Open settings"
+          className="icon-button absolute top-8 right-8 z-20"
+          aria-label="Impostazioni"
         >
-          <SettingsIcon className="w-7 h-7 sm:w-8 sm:h-8 text-gray-600 dark:text-gray-300" />
+          <span className="material-icons text-3xl">settings_applications</span>
         </button>
-      </header>
-
+        <div className="w-full max-w-6xl mx-auto">
+          <header className="flex flex-col sm:flex-row justify-between items-center mb-10 md:mb-12 text-center sm:text-left">
+            <div>
+              <h1 className="text-5xl md:text-6xl font-extrabold text-main tracking-tight">
+                VoiceNote <span className="text-accent">AI</span>
+              </h1>
+            </div>
+          </header>
+          <main className="space-y-8">
+            {/* Inizia Trascrizione Live */}
+            <div className="card">
+              <div className="flex items-center mb-4">
+                <span className="material-icons text-3xl text-accent mr-3">mic_none</span>
+                <h2 className="text-2xl font-semibold text-main">Inizia trascrizione live</h2>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-secondary mb-2" htmlFor="language-select-lingua-di-registrazione">Lingua di registrazione:</label>
+                  <LanguageSelector
+                    selectedLanguage={inputLanguage}
+                    onSelectLanguage={setInputLanguage}
+                    disabled={commonSettingsDisabled}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-secondary mb-2" htmlFor="speaker-count-select">Numero di parlanti:</label>
+                  <SpeakerSelector
+                    value={numberOfSpeakers}
+                    onChange={setNumberOfSpeakers}
+                    disabled={commonSettingsDisabled}
+                  />
+                </div>
+              </div>
+              <AudioController
+                isRecording={isRecording}
+                onStartRecording={handleStartRecording}
+                onStopRecording={handleStopRecordingAndDiarize}
+                onTranscriptChange={handleTranscriptChange}
+                onUnsupported={setSpeechApiUnsupported}
+                speechLang={speechRecognitionLangCode}
+                disabled={audioControllerDisabled}
+                className="w-auto px-4 py-2 text-base rounded-md bg-green-500 hover:bg-green-600 text-white font-semibold flex items-center justify-center gap-2 transition-all duration-150"
+              />
+            </div>
+            {/* Trascrizione */}
+            <div className="card">
+              <div className="flex items-center mb-3">
+                <span className="material-icons text-3xl text-accent mr-3">description</span>
+                <h2 className="text-2xl font-semibold text-main">Trascrizione</h2>
+              </div>
+              <p className="text-sm text-secondary mb-4">L'audio trascritto apparirà qui...</p>
+              <ResultDisplay
+                title={undefined}
+                text={transcriptionResultText + (interimTranscript ? ` ${interimTranscript}` : '')}
+                isLoading={isDiarizing || (isRecording && !interimTranscript && !transcribedText && !diarizedText)}
+                placeholder="La trascrizione apparirà qui..."
+                small={false}
+              />
+            </div>
+            {/* Riassumi e Traduci */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+              {/* Riassumi Testo */}
+              <div className="card flex flex-col h-full min-h-[340px]">
+                <div className="flex items-center mb-4">
+                  <span className="material-icons text-3xl text-sky-400 mr-3">article</span>
+                  <h2 className="text-2xl font-semibold text-main">Riassumi testo</h2>
+                </div>
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-secondary mb-2" htmlFor="summary-language">Lingua del riassunto:</label>
+                  <LanguageSelector
+                    label="Lingua del riassunto:"
+                    selectedLanguage={summaryLanguage}
+                    onSelectLanguage={setSummaryLanguage}
+                    disabled={commonSettingsDisabled}
+                  />
+                </div>
+                <div className="feature-icon-container mb-6">
+                  <ActionIcon
+                    IconComponent={FileText}
+                    label="Genera riassunto"
+                    tooltip="Genera un riassunto del testo trascritto"
+                    onClick={handleSummarize}
+                    disabled={!canProcessText || isLoadingSummary}
+                    isLoading={isLoadingSummary}
+                    iconClassName="text-sky-400 text-6xl mb-2"
+                    textClassName="text-secondary font-medium"
+                  />
+                </div>
+                <ResultDisplay
+                  text={summary}
+                  isLoading={isLoadingSummary}
+                  placeholder="Il riassunto apparirà qui..."
+                  small={true}
+                />
+              </div>
+              {/* Traduci Testo */}
+              <div className="card flex flex-col h-full min-h-[340px]">
+                <div className="flex items-center mb-4">
+                  <span className="material-icons text-3xl text-purple-400 mr-3">g_translate</span>
+                  <h2 className="text-2xl font-semibold text-main">Traduci testo</h2>
+                </div>
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-secondary mb-2" htmlFor="target-language">Lingua di destinazione:</label>
+                  <LanguageSelector
+                    label="Lingua di destinazione:"
+                    selectedLanguage={targetLanguage}
+                    onSelectLanguage={setTargetLanguage}
+                    disabled={commonSettingsDisabled}
+                  />
+                </div>
+                <div className="feature-icon-container mb-6">
+                  <ActionIcon
+                    IconComponent={Languages}
+                    label="Genera traduzione"
+                    tooltip="Genera la traduzione del testo trascritto"
+                    onClick={handleTranslate}
+                    disabled={!canProcessText || isLoadingTranslation}
+                    isLoading={isLoadingTranslation}
+                    iconClassName="text-purple-400 text-6xl mb-2"
+                    textClassName="text-secondary font-medium"
+                  />
+                </div>
+                <ResultDisplay
+                  text={translatedText}
+                  isLoading={isLoadingTranslation}
+                  placeholder="La traduzione apparirà qui..."
+                  small={true}
+                />
+              </div>
+            </div>
+            {/* Info box */}
+            <div className="bg-blue-900/70 border border-blue-700 text-blue-100 text-sm p-6 rounded-lg shadow-lg flex items-start space-x-3">
+              <span className="material-icons text-xl text-blue-300 mt-0.5">info_outline</span>
+              <p>VoiceNote AI utilizza intelligenza artificiale avanzata. Sebbene potente, l'IA può commettere errori o generare informazioni imprecise. Si prega di rivedere attentamente i risultati importanti.</p>
+            </div>
+          </main>
+          <footer className="text-center mt-16 mb-6">
+            <p className="text-sm text-secondary">© 2025 VoiceNote AI. Realizzato con Intelligenza Artificiale e Web Speech API.</p>
+            <p className="text-xs text-slate-500 mt-1">Innovazione al servizio della tua voce.</p>
+          </footer>
+        </div>
+      </div>
       <SettingsPanel
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
-        isRecording={commonSettingsDisabled} 
+        isRecording={commonSettingsDisabled}
         apiKeyMissing={apiKeyMissing}
         speechApiUnsupported={!!speechApiUnsupported}
       />
-
-      {apiKeyMissing && (
-        <div className="w-full max-w-2xl bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md shadow-lg" role="alert">
-          <div className="flex">
-            <div className="py-1"><AlertTriangle className="h-6 w-6 text-red-500 mr-3" /></div>
-            <div>
-              <p className="font-bold">API Key Error</p>
-              <p className="text-sm">{error || "AI Service API Key is missing."}</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {speechApiUnsupported && !apiKeyMissing && (
-         <div className="w-full max-w-2xl bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-md shadow-lg" role="alert">
-          <div className="flex">
-            <div className="py-1"><Info className="h-6 w-6 text-yellow-500 mr-3" /></div>
-            <div>
-              <p className="font-bold">Browser Compatibility</p>
-              <p className="text-sm">{speechApiUnsupported}</p>
-            </div>
-          </div>
-        </div>
-      )}
-      {error && !apiKeyMissing && !error.toLowerCase().includes("api key") && ( 
-         <div className="w-full max-w-2xl bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md relative shadow mb-6" role="alert">
-            <strong className="font-bold">Error: </strong>
-            <span className="block sm:inline">{error}</span>
-          </div>
-        )}
-
-      <main className="w-full max-w-4xl space-y-6">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl flex flex-col items-center space-y-4">
-            <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            {isRecording ? 'Recording (Microphone)...' : 'Start Live Transcription'}
-            </h2>
-             <p className="text-sm text-gray-500 dark:text-gray-400 -mt-2 mb-2 text-center">
-                Use your microphone. Select recording language and number of speakers below.
-            </p>
-            <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <LanguageSelector
-                label="Recording Language:"
-                selectedLanguage={inputLanguage}
-                onSelectLanguage={setInputLanguage}
-                disabled={commonSettingsDisabled}
-                // showAutoOption={true} // Removed: Auto option no longer shown for mic
-              />
-              <SpeakerSelector
-                value={numberOfSpeakers}
-                onChange={setNumberOfSpeakers}
-                disabled={commonSettingsDisabled} 
-              />
-            </div>
-            <AudioController
-              isRecording={isRecording} 
-              onStartRecording={handleStartRecording}
-              onStopRecording={handleStopRecordingAndDiarize} 
-              onTranscriptChange={handleTranscriptChange}
-              onUnsupported={setSpeechApiUnsupported}
-              speechLang={speechRecognitionLangCode} // Use the specific code for API
-              disabled={audioControllerDisabled} 
-            />
-        </div>
-
-        <ResultDisplay
-          title="Transcription"
-          text={transcriptionResultText + (interimTranscript ? ` ${interimTranscript}` : '')}
-          isLoading={isDiarizing || (isRecording && !interimTranscript && !transcribedText && !diarizedText)}
-          placeholder={transcriptionPlaceholderText}
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl flex flex-col space-y-4">
-             <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 text-center">Summarize</h3>
-            <LanguageSelector
-              label="Summary Language:"
-              selectedLanguage={summaryLanguage}
-              onSelectLanguage={setSummaryLanguage}
-              disabled={commonSettingsDisabled}
-            />
-            <ActionIcon
-              IconComponent={FileText}
-              label="Summarize Text"
-              tooltip="Generate a summary of the transcribed text"
-              onClick={handleSummarize}
-              disabled={!canProcessText || isLoadingSummary}
-              isLoading={isLoadingSummary}
-              iconClassName="text-sky-600 dark:text-sky-400 w-10 h-10 sm:w-12 sm:h-12"
-              textClassName="text-sky-700 dark:text-sky-300"
-            />
-            <ResultDisplay
-              text={summary}
-              isLoading={isLoadingSummary}
-              placeholder="Summary will appear here..."
-              small
-            />
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl flex flex-col space-y-4">
-            <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 text-center">Translate</h3>
-            <LanguageSelector
-              label="Target Language:"
-              selectedLanguage={targetLanguage}
-              onSelectLanguage={setTargetLanguage}
-              disabled={commonSettingsDisabled}
-            />
-            <ActionIcon
-              IconComponent={Languages}
-              label="Translate Text"
-              tooltip="Translate the transcribed text"
-              onClick={handleTranslate}
-              disabled={!canProcessText || isLoadingTranslation}
-              isLoading={isLoadingTranslation}
-              iconClassName="text-purple-600 dark:text-purple-400 w-10 h-10 sm:w-12 sm:h-12"
-              textClassName="text-purple-700 dark:text-purple-300"
-            />
-            <ResultDisplay
-              text={translatedText}
-              isLoading={isLoadingTranslation}
-              placeholder="Translation will appear here..."
-              small
-            />
-          </div>
-        </div>
-      </main>
-
-      <div className="w-full max-w-4xl mt-8 p-4 bg-blue-50 dark:bg-sky-900 border border-blue-200 dark:border-sky-700 rounded-lg text-center">
-        <div className="flex items-center justify-center text-blue-600 dark:text-sky-300">
-          {/* Icon removed from here */}
-          <p className="text-sm">
-            VoiceNote AI utilizes advanced artificial intelligence. While powerful, AI can make mistakes or generate inaccurate information. Please review important results carefully.
-          </p>
-        </div>
-      </div>
-      
-      <footer className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-        <p>&copy; {new Date().getFullYear()} VoiceNote AI. Powered by AI & Web Speech API.</p>
-      </footer>
-    </div>
+    </>
   );
 };
 
